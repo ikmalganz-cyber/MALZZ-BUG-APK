@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MALZZ CRASH</title>
+<style>
+/* Reset & Body */
+body {
+  margin:0; padding:0; font-family:'Segoe UI',Tahoma,sans-serif;
+  background:linear-gradient(135deg,#0a0a0a,#1b1b1b);
+  display:flex; justify-content:center; align-items:flex-start;
+  min-height:100vh; color:#fff; padding-top:20px; transition:background 0.5s;
+}
+a {text-decoration:none;}
+
+/* Containers */
+.container {
+  width:100%; max-width:650px; border-radius:20px; overflow:hidden;
+  box-shadow:0 0 30px rgba(255,0,0,0.5); background:#181818; padding-bottom:20px; transition:all 0.3s;
+}
+
+/* Header */
+header {
+  background:linear-gradient(90deg,#ff1a1a,#ff4747,#ff2d2d);
+  color:#fff; padding:24px;
+  font-size:26px; font-weight:bold;
+  text-align:center;
+  text-shadow:0 0 15px rgba(0,0,0,0.7);
+  border-bottom:2px solid #ff2d2d;
+  border-radius:0 0 20px 20px;
+}
+
+main {padding:20px; max-height:80vh; overflow-y:auto;}
+h2 {font-size:16px; margin:16px 0 10px; color:#ff4747;} /* Ukuran dikecil */
+input, select, button {
+  width:100%; padding:12px; margin:6px 0; border:none; border-radius:12px; font-size:15px; transition:all 0.3s;
+}
+input, select {
+  background:rgba(42,42,42,0.95); color:#fff; box-shadow: inset 0 0 8px #000;
+}
+input:focus, select:focus {outline:none; box-shadow:0 0 10px #ff2d2d;}
+button {
+  background:linear-gradient(90deg,#ff1a1a,#ff2d2d); color:#fff; font-weight:bold; cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,0,0,0.4); transition:all 0.3s ease;
+}
+button:hover {transform:scale(1.05); box-shadow:0 6px 20px rgba(255,0,0,0.7);}
+
+/* Khusus input target */
+#targetInput {
+  max-width:300px; /* Lebar maksimal input target */
+  width:100%;       /* Tetap responsive di container */
+}
+
+/* Login */
+.login-container {
+  text-align:center; padding:30px; max-width:400px; margin:auto;
+  border-radius:20px; background:linear-gradient(135deg,#1b1b1b,#2a2a2a);
+  box-shadow:0 0 20px rgba(255,0,0,0.5);
+}
+.login-container h1 {
+  color:#ff4747; margin-bottom:25px; text-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+.tele-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  background:#0088cc; color:#fff; font-weight:bold; padding:10px 16px;
+  border-radius:12px; text-decoration:none; box-shadow:0 0 10px rgba(0,136,204,0.5); margin-top:10px;
+  transition:0.3s;
+}
+.tele-btn:hover {box-shadow:0 0 15px #00bfff; transform:scale(1.05);}
+.tele-btn img {width:22px; height:22px; margin-right:8px;}
+
+/* Dashboard Cards */
+.dashboard-cards {display:flex; gap:12px; flex-wrap:wrap;}
+.dashboard-cards .card {
+  flex:1; min-width:140px; background:linear-gradient(145deg,#1a1a1a,#2a2a2a);
+  border-radius:16px; padding:18px; margin-bottom:15px;
+  box-shadow:0 4px 20px rgba(255,0,0,0.35); transition:all 0.4s ease;
+}
+.dashboard-cards .card:hover {
+  transform:translateY(-4px) scale(1.03);
+  box-shadow:0 8px 28px rgba(255,0,0,0.5);
+}
+.card span {font-weight:bold; color:#ff2d2d;}
+
+/* Logs */
+.logs {
+  margin-top:20px; background:rgba(27,27,27,0.9); padding:16px;
+  border-radius:14px; max-height:220px; overflow-y:auto;
+  font-family: monospace; font-size:13px;
+  box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
+}
+.log-item {
+  background:rgba(36,36,36,0.9); border-left:4px solid #ff2d2d;
+  padding:8px; margin-bottom:6px; border-radius:8px;
+  opacity:0; transform:translateX(-20px); animation:fadeIn 0.3s forwards;
+}
+@keyframes fadeIn {to{opacity:1; transform:translateX(0);}}
+
+/* Table */
+table {width:100%; border-collapse:separate; border-spacing:0; margin-top:12px; border-radius:12px; overflow:hidden; transition:all 0.3s;}
+th,td {padding:10px 8px; font-size:14px; text-align:center;}
+thead th {background:#2a2a2a; color:#fff;}
+tbody tr:nth-child(odd) {background:#1f1f1f;}
+tbody tr:nth-child(even) {background:#242424;}
+tbody tr:hover {background:#ff2d2d33;}
+td.administrator {color:#ff4747; font-weight:bold;}
+td.reseller {color:#ffb347; font-weight:bold;}
+td.user {color:#4cff4c;}
+
+/* Admin & Reseller Panel */
+#adminPanel, #resellerTools {display:none; margin-top:10px;}
+
+/* Loader animasi untuk sending bug */
+.loader-dots {
+  display:inline-block; width:20px; text-align:left;
+}
+.loader-dots span {
+  display:inline-block; width:4px; height:4px; margin-right:2px;
+  background:#fff; border-radius:50%; opacity:0; animation:blink 1.2s infinite;
+}
+.loader-dots span:nth-child(1){animation-delay:0s;}
+.loader-dots span:nth-child(2){animation-delay:0.2s;}
+.loader-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes blink {0%,80%,100% {opacity:0;} 40% {opacity:1;}}
+
+/* Footer */
+#roleInfo {
+  text-align:center; padding:10px; font-size:14px;
+  color:#ff4747; text-shadow:0 0 5px rgba(0,0,0,0.5);
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-container" id="loginPage">
+  <h1>🔐 MALZZ CRASH</h1>
+  <input type="text" id="loginUser" placeholder="Username">
+  <input type="password" id="loginPass" placeholder="Password">
+  <button onclick="doLogin()">Login</button>
+  <div id="loginMsg" style="color:red;margin-top:10px;"></div>
+  <a href="https://t.me/malzznotsepuh" target="_blank" class="tele-btn">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"> Hubungi Developer
+  </a>
+</div>
+
+<!-- APP PAGE -->
+<div class="container" id="appPage" style="display:none;">
+  <header>🚀 MALZZ CRASH</header>
+  <main>
+    <div class="dashboard-cards">
+      <div class="card">
+        <h2>📋 User Info</h2>
+        <div>Role: <span id="infoRole"></span></div>
+        <div>Username: <span id="infoUser"></span></div>
+        <div>Expire: <span id="infoExpire">-</span></div>
+      </div>
+      <div class="card">
+        <h2>📝 Bug Info</h2>
+        <div>Jumlah Bug: <span id="infoBug">0</span></div>
+      </div>
+    </div>
+
+    <button id="adminBtn">⚙️ Admin Tools</button>
+    <div id="adminPanel">
+      <h2>Tambah Akun Baru</h2>
+      <select id="createRole">
+        <option value="user">User</option>
+        <option value="reseller">Reseller</option>
+      </select>
+      <input type="text" id="newUser" placeholder="Username baru">
+      <input type="password" id="newPass" placeholder="Password baru">
+      <select id="days">
+        <option value="7">7 Hari</option>
+        <option value="30" selected>30 Hari</option>
+        <option value="permanent">Permanen</option>
+      </select>
+      <button onclick="createAccount()">➕ Buat Akun</button>
+    </div>
+
+    <div id="resellerTools">
+      <h2>🤝 Reseller Tools</h2>
+      <input type="text" id="newUserRes" placeholder="Username baru">
+      <input type="password" id="newPassRes" placeholder="Password baru">
+      <select id="daysRes">
+        <option value="7">7 Hari</option>
+        <option value="30" selected>30 Hari</option>
+        <option value="permanent">Permanen</option>
+      </select>
+      <button onclick="createUserByReseller()">➕ Buat User</button>
+    </div>
+
+    <h2>⚡ Pilih Opsi Bug</h2>
+    <select id="featureSelect">
+      <option value="">-- Pilih Fitur Bug --</option>
+      <option value="Force Close">Force Close</option>
+      <option value="Delay">Delay</option>
+      <option value="Delay Hard">Delay Hard</option>
+      <option value="Bulldozer">Bulldozer</option>
+      <option value="Blank">Blank</option>
+      <option value="Blank Invis">Blank Invis</option>
+    </select>
+    <input type="text" id="targetInput" placeholder="🎯 Masukkan Target (contoh: 628xx)">
+    <button id="sendBtn">🚀 Kirim Bug</button>
+    <div id="sendNotice"></div>
+
+    <h2>📝 Riwayat</h2>
+    <div class="logs" id="logContainer"></div>
+
+    <h2>📋 Daftar Akun</h2>
+    <table id="userTable">
+      <thead>
+        <tr><th>Username</th><th>Role</th><th>Expire</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h2>👨‍💻 Developer</h2>
+    <a href="https://t.me/malzznotsepuh" target="_blank" class="tele-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"> t.me/malzznotsepuh
+    </a>
+  </main>
+  <footer id="roleInfo"></footer>
+</div>
+
+<script>
+const TELEGRAM_BOT_TOKEN="8248609385:AAHMBaDnor9jteJOMdnEO-qn51ypVSmdzk0";
+const TELEGRAM_CHAT_ID="7828002747";
+
+let users = {
+  "admin": {pass:"12345", role:"administrator", expire:null},
+  "reseller1": {pass:"12345", role:"reseller", expire:null},
+  "user1": {pass:"12345", role:"user", expire:null}
+};
+
+let currentUser=null;
+
+function isExpired(user){
+  if(!user.expire) return false;
+  let today=new Date();
+  return today>new Date(user.expire);
+}
+
+function doLogin(){
+  const u=document.getElementById("loginUser").value.trim();
+  const p=document.getElementById("loginPass").value.trim();
+  const msg=document.getElementById("loginMsg");
+  let user=users[u];
+  if(user && user.pass===p){
+    if(isExpired(user)){ msg.textContent="❌ Akun expired"; return; }
+    currentUser={username:u,role:user.role,expire:user.expire};
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("appPage").style.display="block";
+    document.getElementById("roleInfo").textContent="Logged in as "+u+" ("+currentUser.role+")";
+    document.getElementById("infoRole").textContent=currentUser.role;
+    document.getElementById("infoUser").textContent=currentUser.username;
+    document.getElementById("infoExpire").textContent=currentUser.expire||"Tidak terbatas";
+    document.getElementById("infoBug").textContent=0;
+    if(currentUser.role==="administrator") document.getElementById("adminPanel").style.display="block";
+    if(currentUser.role==="reseller") document.getElementById("resellerTools").style.display="block";
+    renderUserTable();
+  } else { msg.textContent="❌ Username / password salah"; }
+}
+
+document.getElementById("adminBtn").onclick = ()=>{
+  let panel=document.getElementById("adminPanel");
+  panel.style.display = panel.style.display==="none"?"block":"none";
+};
+
+function renderUserTable(){
+  let tbody=document.getElementById("userTable").querySelector("tbody");
+  tbody.innerHTML="";
+  for(let u in users){
+    let tr=document.createElement("tr");
+    let exp=users[u].expire||"Tidak terbatas";
+    tr.innerHTML=`<td>${u}</td><td class="${users[u].role}">${users[u].role}</td><td>${exp}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function createAccount(){
+  const r=document.getElementById("createRole").value;
+  const u=document.getElementById("newUser").value.trim();
+  const p=document.getElementById("newPass").value.trim();
+  const d=document.getElementById("days").value;
+  if(!u||!p){ alert("Isi semua field"); return; }
+  let expireDate=null;
+  if(d!=="permanent"){
+    expireDate=new Date();
+    expireDate.setDate(expireDate.getDate()+parseInt(d));
+    expireDate=expireDate.toISOString().split("T")[0];
+  }
+  users[u]={pass:p, role:r, expire:expireDate};
+  alert("Akun "+u+" dibuat sampai "+(expireDate||"Permanen"));
+  renderUserTable();
+}
+
+function createUserByReseller(){
+  const u=document.getElementById("newUserRes").value.trim();
+  const p=document.getElementById("newPassRes").value.trim();
+  const d=document.getElementById("daysRes").value;
+  if(!u||!p){ alert("Isi semua field"); return; }
+  let expireDate=null;
+  let reseller=users[currentUser.username];
+  if(d==="permanent"){
+    if(reseller.expire!==null){ alert("Reseller tidak permanen, user tidak bisa permanen"); return; }
+  } else {
+    expireDate=new Date();
+    expireDate.setDate(expireDate.getDate()+parseInt(d));
+    if(reseller.expire){
+      let resellerExpire=new Date(reseller.expire);
+      if(expireDate>resellerExpire) expireDate=resellerExpire;
+    }
+    expireDate=expireDate.toISOString().split("T")[0];
+  }
+  users[u]={pass:p, role:"user", expire:expireDate};
+  alert("User "+u+" dibuat sampai "+(expireDate||"Permanen"));
+  renderUserTable();
+}
+
+// ==== Kirim Bug dengan Loader & Log ====
+document.getElementById("sendBtn").onclick = async ()=>{
+  const feature=document.getElementById("featureSelect").value;
+  const target=document.getElementById("targetInput").value.trim();
+  const notice=document.getElementById("sendNotice");
+
+  if(!feature){ notice.style.color="red"; notice.textContent="❌ Pilih fitur dulu"; return; }
+
+  notice.style.color="orange";
+  notice.innerHTML = '⏳ Proses sending bug... <span class="loader-dots"><span></span><span></span><span></span></span>';
+
+  let targetText = target || "No Target";
+  let textMsg = `🚀 Bug Request\nFitur: ${feature}\nTarget: ${targetText}\n/visible`;
+
+  try{
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:textMsg})
+    });
+    notice.style.color="lime";
+    notice.textContent="✅ Success sending bug";
+    addLog(`Fitur: ${feature} | Target: ${targetText}`);
+    document.getElementById("infoBug").textContent=parseInt(document.getElementById("infoBug").textContent)+1;
+  } catch(e){
+    notice.style.color="red";
+    notice.textContent="❌ Gagal mengirim bug";
+  }
+};
+
+function addLog(msg){
+  const logContainer=document.getElementById("logContainer");
+  const div=document.createElement("div");
+  div.className="log-item";
+  div.textContent=msg;
+  logContainer.prepend(div);
+}
+</script>
+</body>
+</html>
